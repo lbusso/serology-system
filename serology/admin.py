@@ -55,7 +55,7 @@ class PedidoAdmin(admin.ModelAdmin):
         "imprimir_informe_btn",
     )
     readonly_fields = ("estado",)
-    list_filter = ("estado", "es_urgente", ("fecha", DateRangeFilter), FechaRapidaFilter)
+    list_filter = ("estado", "es_urgente", ("fecha", DateRangeFilter), FechaRapidaFilter, "diagnostico")
     inlines = (AnalisisInline, )
 
     # --- Botón imprimir que abre modal ---
