@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Pedidos{% endblock %}
+{% block content %}
+<div class="card p-4">
+    <h1>Pedidos</h1>
+    <a class="btn btn-primary mb-3" href="{% url 'pedido_create' %}">➕ Crear Pedido</a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Protocolo</th>
+                <th>Paciente</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pedido in pedidos %}
+                <tr>
+                    <td>{{ pedido.protocolo }}</td>
+                    <td>{{ pedido.paciente }}</td>
+                    <td>{{ pedido.estado }}</td>
+                    <td>
+                        <a href="{% url 'pedido_update' pedido.id %}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                        <a href="{% url 'pedido_delete' pedido.id %}" class="btn btn-sm btn-danger">🗑️ Eliminar</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No hay pedidos cargados.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

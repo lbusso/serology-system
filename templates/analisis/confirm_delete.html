@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Analisis{% endblock %}
+{% block content %}
+<div class="card p-4">
+    <h1>Eliminar Analisis</h1>
+<p>¿Seguro que quieres eliminar a {{ object }}?</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Sí, eliminar</button>
+</form>
+<a href="{% url 'paciente_list' %}">Cancelar</a>
+</div>
+{% endblock %}

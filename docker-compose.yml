@@ -1,0 +1,41 @@
+# docker-compose.yml
+version: "3.9"
+
+services:
+  traefik:
+    image: traefik:v2.11
+    command:
+      - --api.insecure=true                 # dashboard sin auth (solo dev)
+      - --providers.docker=true             # leer labels de docker
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"      # HTTP
+      - "8080:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - web
+
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: serologia_app
+    volumes:
+      - .:/app            # hot-reload en dev
+    environment:
+      # Ajusta si usás settings por env:
+      # - DJANGO_SETTINGS_MODULE=AnalisysSystem.settings
+      - PYTHONUNBUFFERED=1
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.serologia.rule=Host(`serologia.localhost`)
+      - traefik.http.routers.serologia.entrypoints=web
+      - traefik.http.services.serologia.loadbalancer.server.port=8000
+    networks:
+      - web
+
+networks:
+  web:
+    driver: bridge

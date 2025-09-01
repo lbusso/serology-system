@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}   
+{% block title %}Enfermedades{% endblock %}
+{% block content %}
+<div class="card p-4">
+    <h1 class="mb-4">Nueva Enfermedad</h1>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+    <div class="mb-3">
+        {% if field.field.widget.input_type == "checkbox" %}
+            <div class="form-check">
+                {{ field|add_class:"form-check-input" }}
+                <label class="form-check-label" for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+            </div>
+        {% else %}
+            <label for="{{ field.id_for_label }}" class="form-label">
+                {{ field.label }}
+            </label>
+            {{ field|add_class:"form-control" }}
+        {% endif %}
+        
+        {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+        {% endif %}
+
+        {% for error in field.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+{% endfor %}
+
+
+        <div class="d-flex justify-content-between">
+            <a href="javascript:history.back()" class="btn btn-secondary">⬅️ Volver</a>
+            <button class="btn btn-primary" type="submit">💾 Guardar</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Detalle del Pedido</h2>
+
+<p><strong>ID Pedido:</strong> {{ pedido.id }}</p>
+<p><strong>Médico Solicitante:</strong> {{ pedido.medico }}</p>
+<p><strong>Protocolo:</strong> {{ pedido.protocolo }}</p>
+<p><strong>Paciente:</strong> {{ pedido.paciente }}</p>
+<p><strong>Fecha:</strong> {{ pedido.fecha }}</p>
+
+<hr>
+
+<h3>Análisis en este pedido:</h3>
+{% if analisis %}
+    <ul>
+    {% for a in analisis %}
+        <li>
+            {{ a.enfermedad }} - Estado: {{ a.estado }}
+            (<a href="{% url 'detalle_analisis' a.id %}">Ver detalle</a>)
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay análisis en este pedido.</p>
+{% endif %}
+
+<a href="{% url 'lista_pedidos' %}">Volver a la lista de pedidos</a>
+{% endblock %}

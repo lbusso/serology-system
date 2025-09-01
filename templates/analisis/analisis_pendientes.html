@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Análisis pendientes{% endblock %}
+
+{% block content %}
+<div class="card p-4">
+    <h1 class="mb-3">🧪 Análisis pendientes</h1>
+    {% if pendientes %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Paciente</th>
+                    <th>Tipo de Análisis</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for analisis in pendientes %}
+                <tr>
+                    <td>{{ analisis.paciente.apellido }} {{ analisis.paciente.nombre }}</td>
+                    <td>{{ analisis.tipo_analisis.nombre }}</td>
+                    <td>{{ analisis.fecha }}</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" href="{% url 'detalle_analisis' analisis.id %}">🔍 Ver</a>
+                        <a class="btn btn-sm btn-success" href="{% url 'editar_analisis' analisis.id %}">✏ Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="alert alert-success">✅ No hay análisis pendientes.</p>
+    {% endif %}
+</div>
+{% endblock %}

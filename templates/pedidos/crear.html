@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Nuevo Pedido{% endblock %}
+
+{% block content %}
+<div class="card p-4">
+    <h1 class="mb-3">📋 Nuevo Pedido</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <h3>Datos del Pedido</h3>
+        {{ pedido_form.as_p }}
+
+        <hr>
+        <h3>Análisis</h3>
+        {{ formset.management_form }}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tipo de Analisis</th>
+                    <th>Resultado</th>
+                    <th>Estado</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                <tr>
+                    <td>{{ form.tipo_analisis }}</td>
+                    <td>{{ form.resultado }}</td>
+                    <td>{{ form.estado }}</td>
+                    <td>{% if form.DELETE %}{{ form.DELETE }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button class="btn btn-success" type="submit">💾 Guardar Pedido</button>
+    </form>
+</div>
+{% endblock %}

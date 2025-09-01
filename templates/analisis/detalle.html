@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Detalle del análisis{% endblock %}
+
+{% block content %}
+<div class="card p-4">
+    <h1 class="mb-3">🔬 Detalle del análisis</h1>
+
+    <dl class="row">
+        <dt class="col-sm-3">Protocolo</dt>
+        <dd class="col-sm-9"> <b>{{ analisis.pedido.protocolo }}</b></dd>
+    
+        <dt class="col-sm-3">Paciente</dt>
+        <dd class="col-sm-9">{{ analisis.pedido.paciente.apellido }} {{ analisis.pedido.paciente.nombre }}</dd>
+
+        <dt class="col-sm-3">DNI</dt>
+        <dd class="col-sm-9">{{ analisis.pedido.paciente.dni }}</dd>
+
+        <dt class="col-sm-3">Tipo de análisis</dt>
+        <dd class="col-sm-9">{{ analisis.tipo_analisis.nombre }}</dd>
+
+        <dt class="col-sm-3">Estado</dt>
+        <dd class="col-sm-9">{{ analisis.estado }}</dd>
+
+        <dt class="col-sm-3">Impreso</dt>
+        <dd class="col-sm-9">{% if analisis.impreso %}✅ Sí{% else %}❌ No{% endif %}</dd>
+
+        <dt class="col-sm-3">Es urgente</dt>
+        <dd class="col-sm-9">{% if analisis.es_urgente %}⚡ Sí{% else %}No{% endif %}</dd>
+
+        <dt class="col-sm-3">Médico solicitante</dt>
+        <dd class="col-sm-9">{{ analisis.pedido.medico }}</dd>
+
+        <dt class="col-sm-3">Diagnóstico</dt>
+        <dd class="col-sm-9">{{ analisis.pedido.diagnostico }}</dd>
+
+        <dt class="col-sm-3">Resultado</dt>
+        <dd class="col-sm-9">{% if analisis.resultado %}{{ analisis.resultado }}{% else %}<span class="text-muted">Pendiente</span>{% endif %}</dd>
+
+        <dt class="col-sm-3">Fecha</dt>
+        <dd class="col-sm-9">{{ analisis.fecha|date:"d/m/Y" }}</dd>
+    </dl>
+
+    <a href="{% url 'analisis_pendientes' %}" class="btn btn-secondary">🔙 Volver a pendientes</a>
+</div>
+{% endblock %}

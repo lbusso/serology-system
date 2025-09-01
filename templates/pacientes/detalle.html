@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Detalle Paciente{% endblock %}
+{% block content %}
+<div class="card p-4">
+    <h1>{{ paciente.apellido }}, {{ paciente.nombre }}</h1>
+    <p><strong>DNI:</strong> {{ paciente.dni }}</p>
+    <p><strong>Fecha de nacimiento:</strong> {{ paciente.fecha_nacimiento }}</p>
+
+    <h2 class="mt-4">Análisis</h2>
+    <a class="btn btn-primary mb-3" href="{% url 'pedido_create' %}">➕ Nuevo Pedido</a>
+    <ul class="list-group">
+        {% for a in paciente.pedidos.all %}
+            <li class="list-group-item">
+                <strong>{{ a.tipo_analisis}}</strong> - 
+                {{ a.tipo_analisis }} - 
+                <em>{{ a.resultado }}</em>
+                <span class="text-muted float-end">{{ a.fecha }}</span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No tiene análisis cargados.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

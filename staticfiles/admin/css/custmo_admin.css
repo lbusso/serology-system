@@ -1,0 +1,49 @@
+/* Fondo general */
+body {
+    background-color: #f8f5fc; /* lila muy claro */
+}
+
+/* Cabecera principal */
+#header, .module h2, .module caption {
+    background-color: #d6b8f5; /* lila pastel */
+    color: white;
+}
+
+/* Botones */
+input[type=submit], .addlink, .deletelink {
+    background-color: #b97de6;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    padding: 3px 8px;
+}
+input[type=submit]:hover, .addlink:hover, .deletelink:hover {
+    background-color: #9b5fd4;
+}
+
+/* Inline Forms */
+.inline-related {
+    background-color: #f3e5fc; /* lila muy claro */
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+/* List display headers */
+.model-changelist th {
+    background-color: #d6b8f5;
+    color: white;
+}
+
+/* List display rows (hover) */
+.model-changelist tr:hover {
+    background-color: #e8d6f9;
+}
+
+/* Filas alternas */
+.model-changelist tr:nth-child(even) {
+    background-color: #f9f5fc;
+}
+.model-changelist tr:nth-child(odd) {
+    background-color: #f3e5fc;
+}

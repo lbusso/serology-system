@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Pedido{% endblock %}
+{% block content %}
+<div class="card p-4">
+    <h1 class="mb-4">Nuevo Pedido</h1>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <!-- Campos del pedido -->
+        {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field|add_class:"form-control" }}
+                {% for error in field.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <hr>
+        <h3>🔬 Análisis</h3>
+        {{ analisis_formset.management_form }}
+        <div id="analisis-forms">
+            {% for form in analisis_formset %}
+                <div class="border rounded p-3 mb-3 analisis-form">
+                    {% for field in form.visible_fields %}
+                        <div class="mb-2">
+                            {% if field.name == "es_urgente" %}
+                                <div class="form-check">
+                                    {{ field|add_class:"form-check-input" }}
+                                    <label class="form-check-label" for="{{ field.id_for_label }}">
+                                        {{ field.label }}
+                                    </label>
+                                </div>
+                            {% else %}
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field|add_class:"form-select" }}
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" class="btn btn-secondary mb-3" id="add-analisis">➕ Agregar análisis</button>
+
+        <div class="d-flex justify-content-between">
+            <a href="javascript:history.back()" class="btn btn-secondary">⬅️ Volver</a>
+            <button class="btn btn-primary" type="submit">💾 Guardar</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const addBtn = document.getElementById("add-analisis");
+    const formsDiv = document.getElementById("analisis-forms");
+    const totalForms = document.querySelector("#id_analisis_set-TOTAL_FORMS");
+    const emptyForm = formsDiv.querySelector(".analisis-form").cloneNode(true);
+
+    addBtn.addEventListener("click", function() {
+        let formIndex = parseInt(totalForms.value);
+        let newFormHtml = emptyForm.outerHTML.replace(/analisis_set-0/g, `analisis_set-${formIndex}`);
+        formsDiv.insertAdjacentHTML("beforeend", newFormHtml);
+        totalForms.value = formIndex + 1;
+    });
+});
+</script>
+{% endblock %}

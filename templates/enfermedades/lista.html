@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Enfermedades{% endblock %}
+{% block content %}
+<div class="card p-4">
+    <h1>Enfermedades</h1>
+    <a class="btn btn-primary mb-3" href="{% url 'enfermedad_create' %}">➕ Nueva enfermedad</a>
+    <ul class="list-group">
+        {% for enfermedad in enfermedades %}
+            <li class="list-group-item">{{ enfermedad.nombre }}</li>
+        {% empty %}
+            <li class="list-group-item">No hay enfermedades registradas.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+>

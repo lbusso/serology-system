@@ -1,0 +1,50 @@
+/* Fondo general del contenido */
+body, .content-wrapper, .container-fluid {
+    background-color: #f7f5fb;  /* lavanda muy suave */
+    color: #333;                /* texto oscuro */
+}
+
+/* Tablas */
+table {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+/* Encabezados de tablas */
+th {
+    background-color: #e3def8;  /* violeta muy suave */
+    color: #333;
+}
+
+/* Filas de tablas */
+tr:nth-child(even) {
+    background-color: #f0edf8;
+}
+
+/* Inputs, textareas y selects */
+input, textarea, select {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+/* Hover sobre filas */
+tr:hover {
+    background-color: #dcd4f7;
+}
+
+/* Botones, Jet ya los maneja con violeta */
+
+
+/* Todos los ticks de boolean True */
+td span.icon-tick {
+    color: #9b59b6;      /* violeta, o el color que quieras */
+    font-size: 16px;      /* opcional, ajustar tamaño */
+    font-weight: bold;    /* opcional */
+}
+
+/* Opcional: los False (si hay otro span con clase para cruz) */
+td span.icon-cross {
+    color: #ccc;          /* gris para False */
+}

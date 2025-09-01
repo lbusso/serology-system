@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Tipos de Análisis{% endblock %}
+{% block content %}
+<div class="card p-4">
+    <h1>Tipos de Análisis</h1>
+    <a class="btn btn-primary mb-3" href="{% url 'tipoanalisis_create' %}">➕ Nuevo tipo de análisis</a>
+    <ul class="list-group">
+        {% for ta in tipos %}
+            <li class="list-group-item">{{ ta.enfermedad.nombre }} → {{ ta.nombre }}</li>
+        {% empty %}
+            <li class="list-group-item">No hay tipos de análisis cargados.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "admin/base_site.html" %}
+{% load static %}  <!-- ⚠️ Esto es necesario -->
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/admin_dark.css' %}">
+{% endblock %}

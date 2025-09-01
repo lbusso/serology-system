@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Informe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        .titulo-principal {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .subtitulo {
+            text-align: center;
+            font-size: 18px;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        .firma {
+            margin-top: 80px;
+            text-align: right;
+            font-size: 14px;
+        }
+        .firma-linea {
+            margin-top: 40px;
+            border-top: 1px solid #000;
+            width: 250px;
+            text-align: center;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="titulo-principal">Hospital de Referencia</div>
+    <div class="subtitulo">“Dr. Suárez Rocha”</div>
+
+    <h1>Protocolo Nº {{ pedido.protocolo }}</h1>
+
+    <p><strong>Paciente:</strong> {{ pedido.paciente.apellido }}, {{ pedido.paciente.nombre }}</p>
+    <p><strong>Médico solicitante:</strong> {{ pedido.medico }}</p>
+    <p><strong>Diagnóstico:</strong> {{ pedido.diagnostico }}</p>
+    <p><strong>Fecha:</strong> {{ pedido.fecha|date:"d/m/Y" }}</p>
+
+    <h4 style="margin-bottom: 2px; margin-top: 8px;">Análisis</h4>
+
+    {% regroup pedido.analisis.all by tipo_analisis.enfermedad as analisis_por_enfermedad %}
+
+    {% for grupo in analisis_por_enfermedad %}
+        <h4 style="margin-bottom: 4px;">{{ grupo.grouper }}</h4>
+        <ul style="list-style: none; padding-left: 12px; margin-top: 0; margin-bottom: 10px;">
+            {% for analisis in grupo.list %}
+                <li style="margin-bottom: 2px;">
+                    {{ analisis.tipo_analisis.nombre }}: {{ analisis.resultado }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+
+    <div class="firma">
+        <div class="firma-linea">Firma Bioquímico</div>
+    </div>
+</body>
+</html>
