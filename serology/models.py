@@ -1,5 +1,7 @@
 from django.db import models
 from django.template.loader import render_to_string
+from django.utils import timezone
+
 
 class Enfermedad(models.Model):
     nombre = models.CharField(max_length=200, unique=True)
@@ -34,7 +36,7 @@ class Pedido(models.Model):
     paciente = models.ForeignKey('Paciente', on_delete=models.CASCADE, related_name='pedidos')
     medico = models.CharField(max_length=255, verbose_name="Médico solicitante")  # ahora texto libre
     diagnostico = models.TextField(blank=True, null=True)
-    fecha = models.DateTimeField(auto_now_add=True)
+    fecha = models.DateTimeField(default=timezone.now)
     impreso = models.BooleanField(default=False)
     es_urgente = models.BooleanField(default=False)
     estado = models.CharField(
@@ -71,7 +73,7 @@ class Analisis(models.Model):
     pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE, related_name='analisis')
     tipo_analisis = models.ForeignKey(TipoAnalisis, on_delete=models.CASCADE, related_name="analisis_realizados")
     resultado = models.TextField()
-    fecha = models.DateField(auto_now_add=True)
+    fecha = models.DateField(default=timezone.now)
     estado = models.CharField(
         max_length=50,
         choices=[
