@@ -38,6 +38,24 @@
             float: right;
         }
     </style>
+    <style>
+    @media print {
+        @page {
+            margin: 20mm; /* Ajusta márgenes si querés */
+        }
+
+        body {
+            margin: 0;
+        }
+
+        /* Ocultar headers/footers automáticos del navegador */
+        body::before,
+        body::after {
+            display: none !important;
+        }
+    }
+    </style>
+
 </head>
 <body>
     <div class="titulo-principal">Hospital de Referencia</div>
@@ -45,9 +63,9 @@
 
     <h1>Protocolo Nº {{ pedido.protocolo }}</h1>
 
-    <p><strong>Paciente:</strong> {{ pedido.paciente.apellido }}, {{ pedido.paciente.nombre }}</p>
+    <p><strong>Paciente:</strong> {{ pedido.paciente.apellido }} {{ pedido.paciente.nombre }}</p>
+    <p><strong>DNI:</strong> {{ pedido.paciente.dni }}</p>
     <p><strong>Médico solicitante:</strong> {{ pedido.medico }}</p>
-    <p><strong>Diagnóstico:</strong> {{ pedido.diagnostico }}</p>
     <p><strong>Fecha:</strong> {{ pedido.fecha|date:"d/m/Y" }}</p>
 
     <h4 style="margin-bottom: 2px; margin-top: 8px;">Análisis</h4>
