@@ -66,6 +66,11 @@ class Pedido(models.Model):
         """
         return render_to_string("informes/pedido.html", {"pedido": self})
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # guardamos el pedido primero
+        # Actualizamos las fechas de sus análisis
+        self.analisis.update(fecha=self.fecha.date())
+
     def __str__(self):
         return f"Pedido {self.protocolo} - {self.paciente.apellido}, {self.paciente.nombre}"
 
