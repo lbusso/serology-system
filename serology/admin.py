@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 import datetime
 from django.utils.translation import gettext_lazy as _
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
+from django.db.models import Count
 
 # -------------------------------
 # Inline de Analisis para Pedido
@@ -55,7 +56,7 @@ class PedidoAdmin(admin.ModelAdmin):
         "imprimir_informe_btn",
     )
     readonly_fields = ("estado",)
-    list_filter = ("estado", "es_urgente", ("fecha", DateRangeFilter), FechaRapidaFilter, "diagnostico")
+    list_filter = ("protocolo","estado", "es_urgente", ("fecha", DateRangeFilter), FechaRapidaFilter, "diagnostico")
     inlines = (AnalisisInline, )
 
     # --- Botón imprimir que abre modal ---
@@ -163,6 +164,7 @@ class AnalisisAdmin(admin.ModelAdmin):
         "es_urgente_icono",   # reemplaza el campo original
     )
     list_filter = (
+        "pedido__protocolo",
         "estado",
         "tipo_analisis",
         ("fecha", DateRangeFilter),
@@ -178,6 +180,7 @@ class AnalisisAdmin(admin.ModelAdmin):
         "resultado",
     )
     actions = ["marcar_en_progreso"]
+    change_list_template = "admin/serology/analisis/change_list.html"
 
     # Estado coloreado
     def estado_coloreado(self, obj):
@@ -200,6 +203,50 @@ class AnalisisAdmin(admin.ModelAdmin):
             return format_html('<span class="icon-tick"></span>')
         return format_html('<span class="icon-cross"></span>')
     es_urgente_icono.short_description = "Urgente"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "estadisticas/",
+                self.admin_site.admin_view(self.estadisticas_view),
+                name="serology_analisis_estadisticas",
+            ),
+        ]
+        return custom_urls + urls
+
+    def estadisticas_view(self, request):
+        por_tipo = (
+            Analisis.objects
+            .values("tipo_analisis__nombre")
+            .annotate(total=Count("id"))
+            .order_by("tipo_analisis__nombre")
+        )
+        labels = [row["tipo_analisis__nombre"] for row in por_tipo]
+        data = [row["total"] for row in por_tipo]
+
+        por_estado = (
+            Analisis.objects
+            .values("estado")
+            .annotate(total=Count("id"))
+            .order_by("estado")
+        )
+        estados_field = Analisis._meta.get_field("estado")
+        estados_map = dict(estados_field.choices)
+        estados_labels = [estados_map.get(row["estado"], row["estado"]) for row in por_estado]
+        estados_data = [row["total"] for row in por_estado]
+
+        context = dict(
+            self.admin_site.each_context(request),
+            title="Estadísticas de Análisis",
+            labels=labels,
+            data=data,
+            estados_labels=estados_labels,
+            estados_data=estados_data,
+            opts=Analisis._meta,
+            app_label=Analisis._meta.app_label,
+        )
+        return render(request, "admin/serology/analisis/estadisticas.html", context)
 
     # Acción para marcar en progreso
     def marcar_en_progreso(self, request, queryset):
