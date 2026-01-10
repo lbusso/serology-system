@@ -1,0 +1,14 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls admin_modify %}
+
+{% block field_sets %}
+  {% for fieldset in adminform %}
+    {% if fieldset.name != "Perfil" %}
+      {% include "admin/includes/fieldset.html" %}
+    {% endif %}
+  {% endfor %}
+{% endblock %}
+
+{% block inline_field_sets %}
+  {{ block.super }}
+{% endblock %}

@@ -22,6 +22,18 @@ class TipoAnalisis(models.Model):
         return f"{self.enfermedad}-{self.nombre}"
 
 
+class PerfilPedido(models.Model):
+    nombre = models.CharField(max_length=120, unique=True)
+    tipos_analisis = models.ManyToManyField(TipoAnalisis, related_name="perfiles")
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Perfil de pedido"
+        verbose_name_plural = "Perfiles de pedido"
+
+    def __str__(self):
+        return self.nombre
+
 class Paciente(models.Model):
     dni = models.CharField(max_length=15, unique=True)
     apellido = models.CharField(max_length=100)
@@ -34,6 +46,13 @@ class Paciente(models.Model):
 class Pedido(models.Model):
     protocolo = models.IntegerField(blank=True, null=True, max_length=4)
     paciente = models.ForeignKey('Paciente', on_delete=models.CASCADE, related_name='pedidos')
+    perfil = models.ForeignKey(
+        'PerfilPedido',
+        on_delete=models.SET_NULL,
+        related_name='pedidos',
+        blank=True,
+        null=True,
+    )
     medico = models.CharField(max_length=255, verbose_name="Médico solicitante")  # ahora texto libre
     diagnostico = models.TextField(blank=True, null=True)
     fecha = models.DateTimeField(default=timezone.now)

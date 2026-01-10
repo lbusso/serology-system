@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Enfermedad, TipoAnalisis, Paciente, Pedido, Analisis
+from .models import Enfermedad, TipoAnalisis, Paciente, Pedido, Analisis, PerfilPedido
 from django.utils.html import format_html
 from django.http import HttpResponse, JsonResponse
 from django.urls import path, reverse
@@ -21,7 +21,8 @@ class AnalisisInline(admin.TabularInline):
     model = Analisis
     extra = 1  # cuántos formularios vacíos mostrar
     fields = ("tipo_analisis", "estado")  # solo mostrar lo necesario
-    show_change_link = True  # permite abrir el análisis en detalle
+    show_change_link = True  # permite abrir el analisis en detalle
+    template = "admin/serology/pedido/analisis_inline.html"
 
 # -------------------------------
 # Registro de modelos
@@ -37,6 +38,13 @@ class TipoAnalisisAdmin(admin.ModelAdmin):
     list_filter = ("enfermedad",)
     search_fields = ("nombre",)
 
+@admin.register(PerfilPedido)
+class PerfilPedidoAdmin(admin.ModelAdmin):
+    list_display = ("nombre", "activo")
+    list_filter = ("activo",)
+    search_fields = ("nombre",)
+    filter_horizontal = ("tipos_analisis",)
+
 @admin.register(Paciente)
 class PacienteAdmin(admin.ModelAdmin):
     list_display = ("dni", "apellido", "nombre", "fecha_nacimiento")
@@ -45,6 +53,11 @@ class PacienteAdmin(admin.ModelAdmin):
 
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
+    change_form_template = "admin/serology/pedido/change_form.html"
+    fieldsets = (
+        (None, {"fields": ("protocolo", "paciente", "medico", "diagnostico", "fecha", "impreso", "es_urgente", "estado")}),
+        ("Perfil", {"fields": ("perfil",), "description": "Selecciona un perfil para precargar analisis."}),
+    )
     list_display = (
         "protocolo",
         "paciente",
@@ -58,6 +71,22 @@ class PedidoAdmin(admin.ModelAdmin):
     readonly_fields = ("estado",)
     list_filter = ("protocolo","estado", "es_urgente", ("fecha", DateRangeFilter), FechaRapidaFilter, "diagnostico")
     inlines = (AnalisisInline, )
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        pedido = form.instance
+        if change:
+            return
+        if pedido.perfil is None:
+            return
+        if pedido.analisis.exists():
+            return
+        tipos = list(pedido.perfil.tipos_analisis.all())
+        if not tipos:
+            return
+        Analisis.objects.bulk_create(
+            [Analisis(pedido=pedido, tipo_analisis=tipo, resultado="") for tipo in tipos]
+        )
 
     # --- Botón imprimir que abre modal ---
     def imprimir_informe_btn(self, obj):
