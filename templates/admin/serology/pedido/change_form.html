@@ -1,6 +1,13 @@
 {% extends "admin/change_form.html" %}
 {% load i18n admin_urls admin_modify %}
 
+{% block extrahead %}
+  {{ block.super }}
+  {% if diagnostico_quickfill %}
+    {{ diagnostico_quickfill|json_script:"diagnostico-quickfill" }}
+  {% endif %}
+{% endblock %}
+
 {% block field_sets %}
   {% for fieldset in adminform %}
     {% if fieldset.name != "Perfil" %}

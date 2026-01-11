@@ -38,6 +38,21 @@ class PerfilPedido(models.Model):
         return self.nombre
 
 
+class DiagnosticoBoton(models.Model):
+    label = models.CharField(max_length=80)
+    texto = models.CharField(max_length=255)
+    activo = models.BooleanField(default=True)
+    orden = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Boton de diagnostico"
+        verbose_name_plural = "Botones de diagnostico"
+        ordering = ("orden", "label")
+
+    def __str__(self):
+        return self.label
+
+
 class Paciente(models.Model):
     dni = models.CharField(max_length=15, unique=True)
     apellido = models.CharField(max_length=100)

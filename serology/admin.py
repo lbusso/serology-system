@@ -1,5 +1,13 @@
 from django.contrib import admin, messages
-from .models import Enfermedad, TipoAnalisis, Paciente, Pedido, Analisis, PerfilPedido
+from .models import (
+    Analisis,
+    DiagnosticoBoton,
+    Enfermedad,
+    Paciente,
+    Pedido,
+    PerfilPedido,
+    TipoAnalisis,
+)
 from django.utils.html import format_html
 from django.http import HttpResponse, JsonResponse
 from django.urls import path, reverse
@@ -50,9 +58,25 @@ class PerfilPedidoAdmin(admin.ModelAdmin):
     filter_horizontal = ("tipos_analisis",)
 
 
+@admin.register(DiagnosticoBoton)
+class DiagnosticoBotonAdmin(admin.ModelAdmin):
+    list_display = ("label", "texto", "activo", "orden")
+    list_filter = ("activo",)
+    search_fields = ("label", "texto")
+    ordering = ("orden", "label")
+
+
 @admin.register(Paciente)
 class PacienteAdmin(admin.ModelAdmin):
-    list_display = ("dni", "apellido", "nombre", "edad", "telefono", "fecha_nacimiento", "sexo")
+    list_display = (
+        "dni",
+        "apellido",
+        "nombre",
+        "edad",
+        "telefono",
+        "fecha_nacimiento",
+        "sexo",
+    )
     search_fields = ("dni", "apellido", "nombre")
 
 
@@ -224,9 +248,20 @@ class PedidoAdmin(admin.ModelAdmin):
             return JsonResponse({"success": True})
         return JsonResponse({"success": False}, status=400)
 
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        extra_context["diagnostico_quickfill"] = list(
+            DiagnosticoBoton.objects.filter(activo=True)
+            .order_by("orden", "label")
+            .values("label", "texto")
+        )
+        return super().changeform_view(
+            request, object_id, form_url, extra_context=extra_context
+        )
+
     # --- JS y CSS ---
     class Media:
-        js = ("js/admin_modal_imprimir.js",)
+        js = ("js/admin_modal_imprimir.js", "js/admin_diagnostico_quickfill.js")
         css = {"all": ("css/admin_modal_imprimir.css",)}
 
 
