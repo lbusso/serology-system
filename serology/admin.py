@@ -248,6 +248,7 @@ class AnalisisAdmin(admin.ModelAdmin):
     )
     actions = ["marcar_en_progreso"]
     change_list_template = "admin/serology/analisis/change_list.html"
+    change_form_template = "admin/serology/analisis/change_form.html"
 
     # Estado coloreado
     def estado_coloreado(self, obj):
@@ -320,3 +321,6 @@ class AnalisisAdmin(admin.ModelAdmin):
         updated = queryset.update(estado="en_proceso")
         self.message_user(request, f"{updated} análisis fueron marcados como 'En progreso'.")
     marcar_en_progreso.short_description = "Marcar análisis seleccionados como 'En progreso'"
+
+    class Media:
+        js = ("js/admin_resultado_quickfill.js",)
