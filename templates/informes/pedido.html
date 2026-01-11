@@ -73,7 +73,7 @@
 
     <h4 style="margin-bottom: 2px; margin-top: 8px;">Análisis</h4>
 
-    {% regroup pedido.analisis.all by tipo_analisis.enfermedad as analisis_por_enfermedad %}
+    {% regroup analisis by tipo_analisis.enfermedad as analisis_por_enfermedad %}
 
     {% for grupo in analisis_por_enfermedad %}
         <h4 style="margin-bottom: 4px;">{{ grupo.grouper }}</h4>

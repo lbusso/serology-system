@@ -39,6 +39,20 @@ class Paciente(models.Model):
     apellido = models.CharField(max_length=100)
     nombre = models.CharField(max_length=100)
     fecha_nacimiento = models.DateField()
+    sexo = models.CharField(
+        max_length=1,
+        choices=[("F", "Femenino"), ("M", "Masculino")],
+        blank=True,
+        null=True,
+    )
+
+    def codigo_filiacion(self):
+        if not self.sexo:
+            return None
+        nombre = (self.nombre or "").strip().upper()
+        apellido = (self.apellido or "").strip().upper()
+        fecha = self.fecha_nacimiento.strftime("%d%m%Y")
+        return f"{self.sexo}{nombre[:2]}{apellido[:2]}{fecha}"
 
     def __str__(self):
         return f"{self.apellido}, {self.nombre} ({self.dni})"
@@ -79,11 +93,26 @@ class Pedido(models.Model):
                 self.estado = "pendiente"
             self.save(update_fields=["estado"])
 
+    def analisis_no_hiv(self):
+        return self.analisis.exclude(tipo_analisis__enfermedad__nombre="HIV")
+
+    def analisis_hiv(self):
+        return self.analisis.filter(tipo_analisis__enfermedad__nombre="HIV")
+
     def generar_informe(self):
         """
         Devuelve el HTML renderizado del informe del pedido
         """
-        return render_to_string("informes/pedido.html", {"pedido": self})
+        return render_to_string("informes/pedido.html", {
+            "pedido": self,
+            "analisis": self.analisis_no_hiv(),
+        })
+
+    def generar_informe_hiv(self):
+        return render_to_string("informes/pedido_hiv.html", {
+            "pedido": self,
+            "analisis": self.analisis_hiv(),
+        })
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # guardamos el pedido primero

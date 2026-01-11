@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import Enfermedad, TipoAnalisis, Paciente, Pedido, Analisis, PerfilPedido
 from django.utils.html import format_html
 from django.http import HttpResponse, JsonResponse
@@ -47,7 +47,7 @@ class PerfilPedidoAdmin(admin.ModelAdmin):
 
 @admin.register(Paciente)
 class PacienteAdmin(admin.ModelAdmin):
-    list_display = ("dni", "apellido", "nombre", "fecha_nacimiento")
+    list_display = ("dni", "apellido", "nombre", "fecha_nacimiento", "sexo")
     search_fields = ("dni", "apellido", "nombre")
 
 
@@ -67,6 +67,7 @@ class PedidoAdmin(admin.ModelAdmin):
         "fecha",
         "impreso",
         "imprimir_informe_btn",
+        "imprimir_hiv_btn",
     )
     readonly_fields = ("estado",)
     list_filter = ("protocolo","estado", "es_urgente", ("fecha", DateRangeFilter), FechaRapidaFilter, "diagnostico")
@@ -106,6 +107,23 @@ class PedidoAdmin(admin.ModelAdmin):
         return "-"
     imprimir_informe_btn.short_description = "Imprimir informe"
 
+    def imprimir_hiv_btn(self, obj):
+        if obj.estado != "finalizado" or not obj.analisis_hiv().exists():
+            return "-"
+        url = reverse("admin:serology"
+                      "_"
+                      "pedido_imprimir_hiv", args=[obj.pk])
+        return format_html(
+            '''
+            <a class="button btn btn-warning" href="#" onclick="abrir_modal_informe('{}', {})">
+                Imprimir HIV
+            </a>
+            ''',
+            url,
+            obj.pk,
+        )
+    imprimir_hiv_btn.short_description = "Imprimir HIV"
+
     # --- URLs personalizadas ---
     def get_urls(self):
         urls = super().get_urls()
@@ -115,6 +133,11 @@ class PedidoAdmin(admin.ModelAdmin):
                 "<int:pedido_id>/imprimir/",
                 self.admin_site.admin_view(self.imprimir_informe),
                 name="serology_pedido_imprimir",
+            ),
+            path(
+                "<int:pedido_id>/imprimir_hiv/",
+                self.admin_site.admin_view(self.imprimir_informe_hiv),
+                name="serology_pedido_imprimir_hiv",
             ),
             # Endpoint AJAX para marcar impreso
             path(
@@ -136,6 +159,21 @@ class PedidoAdmin(admin.ModelAdmin):
     def imprimir_informe(self, request, pedido_id):
         pedido = Pedido.objects.get(pk=pedido_id)
         html = pedido.generar_informe()
+        return HttpResponse(html)
+
+    def imprimir_informe_hiv(self, request, pedido_id):
+        pedido = Pedido.objects.get(pk=pedido_id)
+        if not pedido.analisis_hiv().exists():
+            self.message_user(request, "El pedido no tiene analisis HIV.", messages.WARNING)
+            return redirect("admin:serology_pedido_change", pedido_id)
+        if not pedido.paciente.sexo:
+            self.message_user(
+                request,
+                "El paciente no tiene sexo registrado. Actualice el paciente antes de imprimir HIV.",
+                messages.ERROR,
+            )
+            return redirect("admin:serology_paciente_change", pedido.paciente_id)
+        html = pedido.generar_informe_hiv()
         return HttpResponse(html)
 
     @csrf_exempt
