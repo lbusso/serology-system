@@ -11,7 +11,9 @@ class PacienteForm(forms.ModelForm):
             "dni": forms.TextInput(attrs={"class": "form-control"}),
             "apellido": forms.TextInput(attrs={"class": "form-control"}),
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
-            "fecha_nacimiento": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "fecha_nacimiento": forms.DateInput(
+                attrs={"class": "form-control", "type": "date"}
+            ),
         }
 
 
@@ -33,6 +35,7 @@ class TipoAnalisisForm(forms.ModelForm):
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
         }
 
+
 class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedido
@@ -43,6 +46,7 @@ class PedidoForm(forms.ModelForm):
             "protocolo": forms.TextInput(attrs={"class": "form-control"}),
         }
 
+
 class AnalisisForm(forms.ModelForm):
     class Meta:
         model = Analisis
@@ -51,7 +55,7 @@ class AnalisisForm(forms.ModelForm):
             "tipo_analisis": forms.Select(attrs={"class": "form-select"}),
         }
 
+
 AnalisisFormSet = inlineformset_factory(
-    Pedido, Analisis, form=AnalisisForm,
-    extra=1, can_delete=True
+    Pedido, Analisis, form=AnalisisForm, extra=1, can_delete=True
 )

@@ -4,28 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('serology', '0004_pedido_estado'),
+        ("serology", "0004_pedido_estado"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='analisis',
-            name='es_urgente',
+            model_name="analisis",
+            name="es_urgente",
         ),
         migrations.RemoveField(
-            model_name='analisis',
-            name='impreso',
+            model_name="analisis",
+            name="impreso",
         ),
         migrations.AddField(
-            model_name='pedido',
-            name='es_urgente',
+            model_name="pedido",
+            name="es_urgente",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='pedido',
-            name='impreso',
+            model_name="pedido",
+            name="impreso",
             field=models.BooleanField(default=False),
         ),
     ]

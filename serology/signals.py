@@ -8,6 +8,7 @@ from django.db.models.signals import pre_save
 def actualizar_estado_pedido(sender, instance, **kwargs):
     instance.pedido.actualizar_estado()
 
+
 @receiver(pre_save, sender=Analisis)
 def set_estado_finalizado(sender, instance, **kwargs):
     """

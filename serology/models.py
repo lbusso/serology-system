@@ -12,7 +12,9 @@ class Enfermedad(models.Model):
 
 
 class TipoAnalisis(models.Model):
-    enfermedad = models.ForeignKey(Enfermedad, on_delete=models.CASCADE, related_name="tipos_analisis")
+    enfermedad = models.ForeignKey(
+        Enfermedad, on_delete=models.CASCADE, related_name="tipos_analisis"
+    )
     nombre = models.CharField(max_length=200)
 
     class Meta:
@@ -34,6 +36,7 @@ class PerfilPedido(models.Model):
 
     def __str__(self):
         return self.nombre
+
 
 class Paciente(models.Model):
     dni = models.CharField(max_length=15, unique=True)
@@ -60,8 +63,13 @@ class Paciente(models.Model):
         hoy = date.today()
         if not self.fecha_nacimiento:
             return None
-        return hoy.year - self.fecha_nacimiento.year - (
-            (hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+        return (
+            hoy.year
+            - self.fecha_nacimiento.year
+            - (
+                (hoy.month, hoy.day)
+                < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+            )
         )
 
     def __str__(self):
@@ -69,17 +77,22 @@ class Paciente(models.Model):
         edad_texto = f"{edad} años" if edad is not None else "edad desconocida"
         return f"{self.apellido}, {self.nombre} ({self.dni}) - {edad_texto}"
 
+
 class Pedido(models.Model):
     protocolo = models.IntegerField(blank=True, null=True, max_length=4)
-    paciente = models.ForeignKey('Paciente', on_delete=models.CASCADE, related_name='pedidos')
+    paciente = models.ForeignKey(
+        "Paciente", on_delete=models.CASCADE, related_name="pedidos"
+    )
     perfil = models.ForeignKey(
-        'PerfilPedido',
+        "PerfilPedido",
         on_delete=models.SET_NULL,
-        related_name='pedidos',
+        related_name="pedidos",
         blank=True,
         null=True,
     )
-    medico = models.CharField(max_length=255, verbose_name="Médico solicitante")  # ahora texto libre
+    medico = models.CharField(
+        max_length=255, verbose_name="Médico solicitante"
+    )  # ahora texto libre
     diagnostico = models.TextField(blank=True, null=True)
     fecha = models.DateTimeField(default=timezone.now)
     impreso = models.BooleanField(default=False)
@@ -115,16 +128,22 @@ class Pedido(models.Model):
         """
         Devuelve el HTML renderizado del informe del pedido
         """
-        return render_to_string("informes/pedido.html", {
-            "pedido": self,
-            "analisis": self.analisis_no_hiv(),
-        })
+        return render_to_string(
+            "informes/pedido.html",
+            {
+                "pedido": self,
+                "analisis": self.analisis_no_hiv(),
+            },
+        )
 
     def generar_informe_hiv(self):
-        return render_to_string("informes/pedido_hiv.html", {
-            "pedido": self,
-            "analisis": self.analisis_hiv(),
-        })
+        return render_to_string(
+            "informes/pedido_hiv.html",
+            {
+                "pedido": self,
+                "analisis": self.analisis_hiv(),
+            },
+        )
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # guardamos el pedido primero
@@ -134,9 +153,14 @@ class Pedido(models.Model):
     def __str__(self):
         return f"Pedido {self.protocolo} - {self.paciente.apellido}, {self.paciente.nombre}"
 
+
 class Analisis(models.Model):
-    pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE, related_name='analisis')
-    tipo_analisis = models.ForeignKey(TipoAnalisis, on_delete=models.CASCADE, related_name="analisis_realizados")
+    pedido = models.ForeignKey(
+        "Pedido", on_delete=models.CASCADE, related_name="analisis"
+    )
+    tipo_analisis = models.ForeignKey(
+        TipoAnalisis, on_delete=models.CASCADE, related_name="analisis_realizados"
+    )
     resultado = models.TextField()
     fecha = models.DateField(default=timezone.now)
     estado = models.CharField(
@@ -148,7 +172,6 @@ class Analisis(models.Model):
         ],
         default="pendiente",
     )
-
 
     def __str__(self):
         return f"{self.tipo_analisis} - {self.pedido.paciente} - {self.fecha}"

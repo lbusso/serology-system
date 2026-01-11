@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 from django.db.models import Count
 
+
 # -------------------------------
 # Inline de Analisis para Pedido
 # -------------------------------
@@ -24,6 +25,7 @@ class AnalisisInline(admin.TabularInline):
     show_change_link = True  # permite abrir el analisis en detalle
     template = "admin/serology/pedido/analisis_inline.html"
 
+
 # -------------------------------
 # Registro de modelos
 # -------------------------------
@@ -32,11 +34,13 @@ class EnfermedadAdmin(admin.ModelAdmin):
     list_display = ("id", "nombre")
     search_fields = ("nombre",)
 
+
 @admin.register(TipoAnalisis)
 class TipoAnalisisAdmin(admin.ModelAdmin):
     list_display = ("id", "nombre", "enfermedad")
     list_filter = ("enfermedad",)
     search_fields = ("nombre",)
+
 
 @admin.register(PerfilPedido)
 class PerfilPedidoAdmin(admin.ModelAdmin):
@@ -44,6 +48,7 @@ class PerfilPedidoAdmin(admin.ModelAdmin):
     list_filter = ("activo",)
     search_fields = ("nombre",)
     filter_horizontal = ("tipos_analisis",)
+
 
 @admin.register(Paciente)
 class PacienteAdmin(admin.ModelAdmin):
@@ -55,8 +60,28 @@ class PacienteAdmin(admin.ModelAdmin):
 class PedidoAdmin(admin.ModelAdmin):
     change_form_template = "admin/serology/pedido/change_form.html"
     fieldsets = (
-        (None, {"fields": ("protocolo", "paciente", "medico", "diagnostico", "fecha", "impreso", "es_urgente", "estado")}),
-        ("Perfil", {"fields": ("perfil",), "description": "Selecciona un perfil para precargar analisis."}),
+        (
+            None,
+            {
+                "fields": (
+                    "protocolo",
+                    "paciente",
+                    "medico",
+                    "diagnostico",
+                    "fecha",
+                    "impreso",
+                    "es_urgente",
+                    "estado",
+                )
+            },
+        ),
+        (
+            "Perfil",
+            {
+                "fields": ("perfil",),
+                "description": "Selecciona un perfil para precargar analisis.",
+            },
+        ),
     )
     list_display = (
         "protocolo",
@@ -70,8 +95,15 @@ class PedidoAdmin(admin.ModelAdmin):
         "imprimir_hiv_btn",
     )
     readonly_fields = ("estado",)
-    list_filter = ("protocolo","estado", "es_urgente", ("fecha", DateRangeFilter), FechaRapidaFilter, "diagnostico")
-    inlines = (AnalisisInline, )
+    list_filter = (
+        "protocolo",
+        "estado",
+        "es_urgente",
+        ("fecha", DateRangeFilter),
+        FechaRapidaFilter,
+        "diagnostico",
+    )
+    inlines = (AnalisisInline,)
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
@@ -86,42 +118,43 @@ class PedidoAdmin(admin.ModelAdmin):
         if not tipos:
             return
         Analisis.objects.bulk_create(
-            [Analisis(pedido=pedido, tipo_analisis=tipo, resultado="") for tipo in tipos]
+            [
+                Analisis(pedido=pedido, tipo_analisis=tipo, resultado="")
+                for tipo in tipos
+            ]
         )
 
     # --- Botón imprimir que abre modal ---
     def imprimir_informe_btn(self, obj):
         if obj.estado == "finalizado":
-            url = reverse("admin:serology"
-                          "_"
-                          "pedido_imprimir", args=[obj.pk])
+            url = reverse("admin:serology_pedido_imprimir", args=[obj.pk])
             return format_html(
-                '''
+                """
                 <a class="button btn btn-info" href="#" onclick="abrir_modal_informe('{}', {})">
                     🖨️ Imprimir
                 </a>
-                ''',
+                """,
                 url,
                 obj.pk,
             )
         return "-"
+
     imprimir_informe_btn.short_description = "Imprimir informe"
 
     def imprimir_hiv_btn(self, obj):
         if obj.estado != "finalizado" or not obj.analisis_hiv().exists():
             return "-"
-        url = reverse("admin:serology"
-                      "_"
-                      "pedido_imprimir_hiv", args=[obj.pk])
+        url = reverse("admin:serology_pedido_imprimir_hiv", args=[obj.pk])
         return format_html(
-            '''
+            """
             <a class="button btn btn-warning" href="#" onclick="abrir_modal_informe('{}', {})">
                 Imprimir HIV
             </a>
-            ''',
+            """,
             url,
             obj.pk,
         )
+
     imprimir_hiv_btn.short_description = "Imprimir HIV"
 
     # --- URLs personalizadas ---
@@ -153,7 +186,11 @@ class PedidoAdmin(admin.ModelAdmin):
         pedido = get_object_or_404(Pedido, pk=pedido_id)
         pedido.impreso = True
         pedido.save()
-        self.message_user(request, f"El pedido {pedido.id} fue marcado como impreso ✅", messages.SUCCESS)
+        self.message_user(
+            request,
+            f"El pedido {pedido.id} fue marcado como impreso ✅",
+            messages.SUCCESS,
+        )
         return redirect("..")  # vuelve al changelist
 
     def imprimir_informe(self, request, pedido_id):
@@ -164,7 +201,9 @@ class PedidoAdmin(admin.ModelAdmin):
     def imprimir_informe_hiv(self, request, pedido_id):
         pedido = Pedido.objects.get(pk=pedido_id)
         if not pedido.analisis_hiv().exists():
-            self.message_user(request, "El pedido no tiene analisis HIV.", messages.WARNING)
+            self.message_user(
+                request, "El pedido no tiene analisis HIV.", messages.WARNING
+            )
             return redirect("admin:serology_pedido_change", pedido_id)
         if not pedido.paciente.sexo:
             self.message_user(
@@ -187,36 +226,35 @@ class PedidoAdmin(admin.ModelAdmin):
 
     # --- JS y CSS ---
     class Media:
-        js = ('js/admin_modal_imprimir.js',)
-        css = {
-            'all': ('css/admin_modal_imprimir.css',)
-        }
-
-
+        js = ("js/admin_modal_imprimir.js",)
+        css = {"all": ("css/admin_modal_imprimir.css",)}
 
 
 class FechaRapidaFilter(admin.SimpleListFilter):
-    title = _('Fecha rápida')
-    parameter_name = 'fecha_rapida'
+    title = _("Fecha rápida")
+    parameter_name = "fecha_rapida"
 
     def lookups(self, request, model_admin):
         return [
-            ('hoy', _('Hoy')),
-            ('este_mes', _('Este mes')),
-            ('mes_pasado', _('Mes pasado')),
+            ("hoy", _("Hoy")),
+            ("este_mes", _("Este mes")),
+            ("mes_pasado", _("Mes pasado")),
         ]
 
     def queryset(self, request, queryset):
         hoy = datetime.date.today()
-        if self.value() == 'hoy':
+        if self.value() == "hoy":
             return queryset.filter(fecha=hoy)
-        if self.value() == 'este_mes':
+        if self.value() == "este_mes":
             return queryset.filter(fecha__year=hoy.year, fecha__month=hoy.month)
-        if self.value() == 'mes_pasado':
+        if self.value() == "mes_pasado":
             primer_dia_mes = hoy.replace(day=1)
             mes_pasado = primer_dia_mes - datetime.timedelta(days=1)
-            return queryset.filter(fecha__year=mes_pasado.year, fecha__month=mes_pasado.month)
+            return queryset.filter(
+                fecha__year=mes_pasado.year, fecha__month=mes_pasado.month
+            )
         return queryset
+
 
 # Admin
 @admin.register(Analisis)
@@ -228,7 +266,7 @@ class AnalisisAdmin(admin.ModelAdmin):
         "tipo_analisis",
         "estado_coloreado",
         "fecha",
-        "es_urgente_icono",   # reemplaza el campo original
+        "es_urgente_icono",  # reemplaza el campo original
     )
     list_filter = (
         "pedido__protocolo",
@@ -263,6 +301,7 @@ class AnalisisAdmin(admin.ModelAdmin):
             color,
             obj.get_estado_display(),
         )
+
     estado_coloreado.short_description = "Estado"
 
     # Booleano pedido__es_urgente como icono
@@ -270,6 +309,7 @@ class AnalisisAdmin(admin.ModelAdmin):
         if obj.pedido.es_urgente:
             return format_html('<span class="icon-tick"></span>')
         return format_html('<span class="icon-cross"></span>')
+
     es_urgente_icono.short_description = "Urgente"
 
     def get_urls(self):
@@ -285,8 +325,7 @@ class AnalisisAdmin(admin.ModelAdmin):
 
     def estadisticas_view(self, request):
         por_tipo = (
-            Analisis.objects
-            .values("tipo_analisis__nombre")
+            Analisis.objects.values("tipo_analisis__nombre")
             .annotate(total=Count("id"))
             .order_by("tipo_analisis__nombre")
         )
@@ -294,14 +333,15 @@ class AnalisisAdmin(admin.ModelAdmin):
         data = [row["total"] for row in por_tipo]
 
         por_estado = (
-            Analisis.objects
-            .values("estado")
+            Analisis.objects.values("estado")
             .annotate(total=Count("id"))
             .order_by("estado")
         )
         estados_field = Analisis._meta.get_field("estado")
         estados_map = dict(estados_field.choices)
-        estados_labels = [estados_map.get(row["estado"], row["estado"]) for row in por_estado]
+        estados_labels = [
+            estados_map.get(row["estado"], row["estado"]) for row in por_estado
+        ]
         estados_data = [row["total"] for row in por_estado]
 
         context = dict(
@@ -319,8 +359,13 @@ class AnalisisAdmin(admin.ModelAdmin):
     # Acción para marcar en progreso
     def marcar_en_progreso(self, request, queryset):
         updated = queryset.update(estado="en_proceso")
-        self.message_user(request, f"{updated} análisis fueron marcados como 'En progreso'.")
-    marcar_en_progreso.short_description = "Marcar análisis seleccionados como 'En progreso'"
+        self.message_user(
+            request, f"{updated} análisis fueron marcados como 'En progreso'."
+        )
+
+    marcar_en_progreso.short_description = (
+        "Marcar análisis seleccionados como 'En progreso'"
+    )
 
     class Media:
         js = ("js/admin_resultado_quickfill.js",)

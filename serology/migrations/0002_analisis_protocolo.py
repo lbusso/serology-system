@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('serology', '0001_initial'),
+        ("serology", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='analisis',
-            name='protocolo',
+            model_name="analisis",
+            name="protocolo",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

@@ -5,48 +5,70 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('serology', '0002_analisis_protocolo'),
+        ("serology", "0002_analisis_protocolo"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='analisis',
-            old_name='tipos_analisis',
-            new_name='tipo_analisis',
+            model_name="analisis",
+            old_name="tipos_analisis",
+            new_name="tipo_analisis",
         ),
         migrations.RemoveField(
-            model_name='analisis',
-            name='diagnostico',
+            model_name="analisis",
+            name="diagnostico",
         ),
         migrations.RemoveField(
-            model_name='analisis',
-            name='medico_solicitante',
+            model_name="analisis",
+            name="medico_solicitante",
         ),
         migrations.RemoveField(
-            model_name='analisis',
-            name='paciente',
+            model_name="analisis",
+            name="paciente",
         ),
         migrations.RemoveField(
-            model_name='analisis',
-            name='protocolo',
+            model_name="analisis",
+            name="protocolo",
         ),
         migrations.CreateModel(
-            name='Pedido',
+            name="Pedido",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('medico', models.CharField(max_length=255, verbose_name='Médico solicitante')),
-                ('diagnostico', models.TextField(blank=True, null=True)),
-                ('protocolo', models.IntegerField(blank=True, max_length=4, null=True)),
-                ('fecha', models.DateTimeField(auto_now_add=True)),
-                ('paciente', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pedidos', to='serology.paciente')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "medico",
+                    models.CharField(max_length=255, verbose_name="Médico solicitante"),
+                ),
+                ("diagnostico", models.TextField(blank=True, null=True)),
+                ("protocolo", models.IntegerField(blank=True, max_length=4, null=True)),
+                ("fecha", models.DateTimeField(auto_now_add=True)),
+                (
+                    "paciente",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="pedidos",
+                        to="serology.paciente",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='analisis',
-            name='pedido',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='analisis', to='serology.pedido'),
+            model_name="analisis",
+            name="pedido",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="analisis",
+                to="serology.pedido",
+            ),
             preserve_default=False,
         ),
     ]

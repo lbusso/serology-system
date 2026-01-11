@@ -5,51 +5,113 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Enfermedad',
+            name="Enfermedad",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nombre', models.CharField(max_length=200, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nombre", models.CharField(max_length=200, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Paciente',
+            name="Paciente",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('dni', models.CharField(max_length=15, unique=True)),
-                ('apellido', models.CharField(max_length=100)),
-                ('nombre', models.CharField(max_length=100)),
-                ('fecha_nacimiento', models.DateField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("dni", models.CharField(max_length=15, unique=True)),
+                ("apellido", models.CharField(max_length=100)),
+                ("nombre", models.CharField(max_length=100)),
+                ("fecha_nacimiento", models.DateField()),
             ],
         ),
         migrations.CreateModel(
-            name='TipoAnalisis',
+            name="TipoAnalisis",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nombre', models.CharField(max_length=200)),
-                ('enfermedad', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tipos_analisis', to='serology.enfermedad')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nombre", models.CharField(max_length=200)),
+                (
+                    "enfermedad",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tipos_analisis",
+                        to="serology.enfermedad",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Analisis',
+            name="Analisis",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('resultado', models.TextField()),
-                ('fecha', models.DateField(auto_now_add=True)),
-                ('estado', models.CharField(choices=[('pendiente', 'Pendiente'), ('en_proceso', 'En proceso'), ('finalizado', 'Finalizado')], default='pendiente', max_length=50)),
-                ('impreso', models.BooleanField(default=False)),
-                ('es_urgente', models.BooleanField(default=False)),
-                ('medico_solicitante', models.CharField(max_length=200)),
-                ('diagnostico', models.TextField(blank=True, null=True)),
-                ('paciente', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='analisis', to='serology.paciente')),
-                ('tipos_analisis', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='analisis_realizados', to='serology.tipoanalisis')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("resultado", models.TextField()),
+                ("fecha", models.DateField(auto_now_add=True)),
+                (
+                    "estado",
+                    models.CharField(
+                        choices=[
+                            ("pendiente", "Pendiente"),
+                            ("en_proceso", "En proceso"),
+                            ("finalizado", "Finalizado"),
+                        ],
+                        default="pendiente",
+                        max_length=50,
+                    ),
+                ),
+                ("impreso", models.BooleanField(default=False)),
+                ("es_urgente", models.BooleanField(default=False)),
+                ("medico_solicitante", models.CharField(max_length=200)),
+                ("diagnostico", models.TextField(blank=True, null=True)),
+                (
+                    "paciente",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="analisis",
+                        to="serology.paciente",
+                    ),
+                ),
+                (
+                    "tipos_analisis",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="analisis_realizados",
+                        to="serology.tipoanalisis",
+                    ),
+                ),
             ],
         ),
     ]

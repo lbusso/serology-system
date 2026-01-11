@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('serology', '0006_alter_tipoanalisis_options_alter_analisis_fecha_and_more'),
+        ("serology", "0006_alter_tipoanalisis_options_alter_analisis_fecha_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='paciente',
-            name='sexo',
-            field=models.CharField(blank=True, choices=[('F', 'Femenino'), ('M', 'Masculino')], max_length=1, null=True),
+            model_name="paciente",
+            name="sexo",
+            field=models.CharField(
+                blank=True,
+                choices=[("F", "Femenino"), ("M", "Masculino")],
+                max_length=1,
+                null=True,
+            ),
         ),
     ]

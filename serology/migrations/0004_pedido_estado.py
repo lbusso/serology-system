@@ -4,15 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('serology', '0003_rename_tipos_analisis_analisis_tipo_analisis_and_more'),
+        ("serology", "0003_rename_tipos_analisis_analisis_tipo_analisis_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pedido',
-            name='estado',
-            field=models.CharField(choices=[('pendiente', 'Pendiente'), ('en_proceso', 'En proceso'), ('finalizado', 'Finalizado')], default='pendiente', max_length=50),
+            model_name="pedido",
+            name="estado",
+            field=models.CharField(
+                choices=[
+                    ("pendiente", "Pendiente"),
+                    ("en_proceso", "En proceso"),
+                    ("finalizado", "Finalizado"),
+                ],
+                default="pendiente",
+                max_length=50,
+            ),
         ),
     ]
