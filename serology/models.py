@@ -1,6 +1,7 @@
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils import timezone
+from datetime import date
 
 
 class Enfermedad(models.Model):
@@ -54,8 +55,19 @@ class Paciente(models.Model):
         fecha = self.fecha_nacimiento.strftime("%d%m%Y")
         return f"{self.sexo}{nombre[:2]}{apellido[:2]}{fecha}"
 
+    @property
+    def edad(self):
+        hoy = date.today()
+        if not self.fecha_nacimiento:
+            return None
+        return hoy.year - self.fecha_nacimiento.year - (
+            (hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+        )
+
     def __str__(self):
-        return f"{self.apellido}, {self.nombre} ({self.dni})"
+        edad = self.edad
+        edad_texto = f"{edad} años" if edad is not None else "edad desconocida"
+        return f"{self.apellido}, {self.nombre} ({self.dni}) - {edad_texto}"
 
 class Pedido(models.Model):
     protocolo = models.IntegerField(blank=True, null=True, max_length=4)

@@ -47,7 +47,7 @@ class PerfilPedidoAdmin(admin.ModelAdmin):
 
 @admin.register(Paciente)
 class PacienteAdmin(admin.ModelAdmin):
-    list_display = ("dni", "apellido", "nombre", "fecha_nacimiento", "sexo")
+    list_display = ("dni", "apellido", "nombre", "edad", "fecha_nacimiento", "sexo")
     search_fields = ("dni", "apellido", "nombre")
 
 
