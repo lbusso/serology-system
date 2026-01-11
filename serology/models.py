@@ -43,6 +43,7 @@ class Paciente(models.Model):
     apellido = models.CharField(max_length=100)
     nombre = models.CharField(max_length=100)
     fecha_nacimiento = models.DateField()
+    telefono = models.CharField(max_length=30, blank=True, null=True)
     sexo = models.CharField(
         max_length=1,
         choices=[("F", "Femenino"), ("M", "Masculino")],
