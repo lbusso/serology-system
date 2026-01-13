@@ -33,6 +33,8 @@
 
         container.appendChild(createButton("REACTIVO"));
         container.appendChild(createButton("NO REACTIVO"));
+        container.appendChild(createButton("POSITIVO"));
+        container.appendChild(createButton("NEGATIVO"));
 
         field.parentNode.insertBefore(container, field);
     }
